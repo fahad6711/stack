@@ -1,68 +1,59 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-void main() {
-    int top = -1;
-    int choice, value, size;
+struct Stack {
+    int top;
+    int capacity;
+    int *array;
+};
 
-    printf("Enter the size of the stack: ");
-    scanf("%d", &size);
+struct Stack* createStack(int capacity) {
+    struct Stack* stack = (struct Stack*)malloc(sizeof(struct Stack));
+    stack->capacity = capacity;
+    stack->top = -1;
+    stack->array = (int*)malloc(stack->capacity * sizeof(int));
+    return stack;
+}
 
-    int stack[size];
+int isFull(struct Stack* stack) {
+    return stack->top == stack->capacity - 1;
+}
 
-    while (1) {
-        printf("\n--- STACK MENU ---");
-        printf("\n1. PUSH");
-        printf("\n2. POP");
-        printf("\n3. DISPLAY");
-        printf("\n4. EXIT");
-        printf("\nEnter your choice: ");
-        scanf("%d", &choice);
+int isEmpty(struct Stack* stack) {
+    return stack->top == -1;
+}
 
-        switch (choice) {
-            case 1:
-                // Check if the stack is full
-                if (top == size - 1) {
-                    printf("Stack Overflow! Cannot push into the stack.\n");
-                } else {
-                    printf("Enter value to push: ");
-                    scanf("%d", &value);
-                    top++;
-                    stack[top] = value;
-                    printf("%d pushed into the stack.\n", value);
-                }
-                break;
+void push(struct Stack* stack, int item) {
+    if (isFull(stack))
+        return;
+    stack->array[++stack->top] = item;
+}
 
-            case 2:
-                // Check if the stack is empty
-                if (top == -1) {
-                    printf("Stack Underflow! Cannot pop from the stack.\n");
-                } else {
-                    value = stack[top];
-                    top--;
-                    printf("%d popped from the stack.\n", value);
-                }
-                break;
+int pop(struct Stack* stack) {
+    if (isEmpty(stack))
+        return -1;
+    return stack->array[stack->top--];
+}
 
-            case 3:
-                // Display stack elements
-                if (top == -1) {
-                    printf("Stack is empty.\n");
-                } else {
-                    printf("Stack elements are:\n");
-                    for (int i = top; i >= 0; i--) {
-                        printf("%d\n", stack[i]);
-                    }
-                }
-                break;
+int peek(struct Stack* stack) {
+    if (isEmpty(stack))
+        return -1;
+    return stack->array[stack->top];
+}
 
-            case 4:
-                // Exit the program
-                printf("Exiting program.\n");
-                return;
+void freeStack(struct Stack* stack) {
+    free(stack->array);
+    free(stack);
+}
 
-            default:
-                printf("Invalid choice! Please enter a valid option.\n");
-                break;
-        }
-    }
+int main() {
+    struct Stack* stack = createStack(100);
+    push(stack, 10);
+    push(stack, 20);
+    push(stack, 30);
+    printf("Top item is %d\n", peek(stack));
+    printf("Popped item is %d\n", pop(stack));
+    printf("Top item is %d\n", peek(stack));
+    freeStack(stack);
+    return 0;
 }
